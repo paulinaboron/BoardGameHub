@@ -1,0 +1,89 @@
+@model BoardGameHub.Models.DbModels.BoardGame
+
+@{
+    ViewData["Title"] = "Edytuj grê";
+}
+
+<h1>Edytuj grê</h1>
+
+<h4>BoardGame</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="BoardGameId" />
+            <input type="hidden" name="currentImagePath" value="@Model.ImagePath" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label asp-for="MinPlayers" class="control-label"></label>
+                    <input asp-for="MinPlayers" type="number" min="1" class="form-control" />
+                    <span asp-validation-for="MinPlayers" class="text-danger"></span>
+                </div>
+                <div class="col">
+                    <label asp-for="MaxPlayers" class="control-label"></label>
+                    <input asp-for="MaxPlayers" type="number" min="1" class="form-control" />
+                    <span asp-validation-for="MaxPlayers" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="CategoryId" class="control-label">Kategoria</label>
+                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId">
+                    <option value="">-- Wybierz kategoriê --</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="PublisherId" class="control-label">Wydawca</label>
+                <select asp-for="PublisherId" class="form-control" asp-items="ViewBag.PublisherId">
+                    <option value="">-- Wybierz wydawcê --</option>
+                </select>
+                <span asp-validation-for="PublisherId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Status" class="control-label">Status</label>
+                <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<BoardGameHub.Models.DbModels.GameStatus>()"></select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="control-label">Obecne zdjêcie</label>
+                <div>
+                    <img src="@(string.IsNullOrEmpty(Model.ImagePath) ? Url.Content("~/images/placeholder.png") : Url.Content(Model.ImagePath))"
+                         alt="Ok³adka" class="img-thumbnail" style="max-width:200px;" />
+                </div>
+            </div>
+
+            <div class="form-group mb-4">
+                <label class="control-label">Zmieñ zdjêcie (opcjonalnie)</label>
+                <input type="file" name="imageFile" class="form-control" accept="image/*" />
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Zapisz" class="btn btn-primary" />
+                <a asp-action="ViewAll" class="btn btn-secondary">Powrót do katalogu</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

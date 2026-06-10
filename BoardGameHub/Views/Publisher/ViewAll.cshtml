@@ -1,0 +1,35 @@
+﻿@model IEnumerable<BoardGameHub.Models.DbModels.Publisher>
+
+@{
+    ViewData["Title"] = "Wydawcy";
+}
+
+<h1>Wydawcy gier</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Dodaj nowego wydawcę</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nazwa wydawcy
+            </th>
+            <th>Akcje</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.PublisherId">Edytuj</a> |
+                    <a asp-action="Delete" asp-route-id="@item.PublisherId">Usuń</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

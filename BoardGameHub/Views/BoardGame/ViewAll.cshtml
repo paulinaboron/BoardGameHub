@@ -1,0 +1,75 @@
+﻿@model IEnumerable<BoardGameHub.Models.DbModels.BoardGame>
+
+@{
+    ViewData["Title"] = "Katalog Gier";
+}
+
+<h1>Katalog gier planszowych</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Dodaj nową grę</a>
+</p>
+
+<table class="table align-middle">
+    <thead>
+        <tr>
+            <th>Okładka</th>
+            <th>Tytuł</th>
+            <th>Liczba graczy</th>
+            <th>Kategoria</th>
+            <th>Wydawca</th>
+            <th>Status</th>
+            <th>Akcje</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.ImagePath))
+                    {
+                        <img src="@item.ImagePath" alt="Okładka @item.Title" style="max-width: 70px; height: auto; border-radius: 4px;" />
+                    }
+                    else
+                    {
+                        <span class="text-muted">Brak zdjęcia</span>
+                    }
+                </td>
+                <td>
+                    <strong>@Html.DisplayFor(modelItem => item.Title)</strong>
+                    <br />
+                    <small class="text-muted">@item.Description</small>
+                </td>
+                <td>
+                    @item.MinPlayers - @item.MaxPlayers os.
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Publisher.Name)
+                </td>
+                <td>
+                    @* Kolorowanie statusu w zależności od dostępności gier *@
+                    @if (item.Status == BoardGameHub.Models.DbModels.GameStatus.Dostępna)
+                    {
+                        <span class="badge bg-success">@item.Status</span>
+                    }
+                    else if (item.Status == BoardGameHub.Models.DbModels.GameStatus.Wypożyczona)
+                    {
+                        <span class="badge bg-warning text-dark">@item.Status</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">@item.Status</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.BoardGameId" class="btn btn-sm btn-outline-secondary">Edytuj</a>
+                    <a asp-action="Delete" asp-route-id="@item.BoardGameId" class="btn btn-sm btn-outline-danger">Usuń</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

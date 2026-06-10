@@ -1,0 +1,39 @@
+﻿@model IEnumerable<BoardGameHub.Models.DbModels.BoardGame>
+
+@{
+    ViewData["Title"] = "Katalog gier (tylko do podglądu)";
+}
+
+<h1>Katalog gier</h1>
+<hr />
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="row g-0">
+                    <div class="col-auto p-2">
+                        <img src="@(string.IsNullOrEmpty(item.ImagePath) ? Url.Content("~/images/placeholder.png") : Url.Content(item.ImagePath))"
+                             alt="@item.Title" class="img-thumbnail" style="width:150px; height:auto;" />
+                    </div>
+                    <div class="col">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Title</h5>
+                            <p class="card-text">@item.Description</p>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    Kategoria: @item.Category?.Name ?? "-" |
+                                    Wydawca: @item.Publisher?.Name ?? "-" |
+                                    Gracze: @item.MinPlayers–@item.MaxPlayers |
+                                    Status: @item.Status
+                                </small>
+                            </p>
+                            <a asp-action="Details" asp-route-id="@item.BoardGameId" class="btn btn-primary">Szczegóły</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,35 @@
+﻿@model BoardGameHub.Models.DbModels.BoardGame
+
+@{
+    ViewData["Title"] = "Szczegóły gry";
+}
+
+<h1>@Model.Title</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <img src="@(string.IsNullOrEmpty(Model.ImagePath) ? Url.Content("~/images/placeholder.png") : Url.Content(Model.ImagePath))"
+             alt="@Model.Title" class="img-fluid img-thumbnail" />
+    </div>
+    <div class="col-md-8">
+        <dl class="row">
+            <dt class="col-sm-3">Opis</dt>
+            <dd class="col-sm-9">@Model.Description</dd>
+
+            <dt class="col-sm-3">Kategoria</dt>
+            <dd class="col-sm-9">@Model.Category?.Name ?? "-"</dd>
+
+            <dt class="col-sm-3">Wydawca</dt>
+            <dd class="col-sm-9">@Model.Publisher?.Name ?? "-"</dd>
+
+            <dt class="col-sm-3">Liczba graczy</dt>
+            <dd class="col-sm-9">@Model.MinPlayers – @Model.MaxPlayers</dd>
+
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9">@Model.Status</dd>
+        </dl>
+
+        <a asp-action="UserViewAll" class="btn btn-secondary">Powrót</a>
+    </div>
+</div>
