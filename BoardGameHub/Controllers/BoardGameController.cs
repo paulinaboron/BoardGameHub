@@ -36,12 +36,35 @@ namespace BoardGameHub.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public IActionResult UserViewAll()
+        public IActionResult UserViewAll(int? categoryId, string? status)
         {
             var boardGames = _context.BoardGames
                 .Include(b => b.Category)
                 .Include(b => b.Publisher)
+                .AsEnumerable()
                 .ToList();
+
+            // Filtrowanie po kategorii
+            if (categoryId.HasValue && categoryId.Value > 0)
+            {
+                boardGames = boardGames.Where(b => b.CategoryId == categoryId.Value).ToList();
+            }
+
+            // Filtrowanie po dostępności
+            if (!string.IsNullOrEmpty(status))
+            {
+                if (Enum.TryParse<GameStatus>(status, out var statusEnum))
+                {
+                    boardGames = boardGames.Where(b => b.Status == statusEnum).ToList();
+                }
+            }
+
+            // Pobierz listę kategorii do widoku
+            ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name", categoryId);
+            ViewBag.Statuses = new SelectList(Enum.GetValues(typeof(GameStatus)).Cast<GameStatus>(), status);
+            ViewBag.SelectedCategoryId = categoryId;
+            ViewBag.SelectedStatus = status;
+
             return View(boardGames);
         }
 

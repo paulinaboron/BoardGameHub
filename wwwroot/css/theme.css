@@ -1,0 +1,155 @@
+:root {
+  /* Paleta pastelowa: be¿ + turkus/zieleñ */
+  --bg: #f7f5f2;             /* jasny be¿ t³a */
+  --surface: #ffffff;        /* karta / surface */
+  --beige-100: #efe9e0;      /* jasny akcent be¿ */
+  --beige-300: #e4d9cc;
+  --mint: #7fd6c8;           /* turkus/miêtowy akcent */
+  --mint-600: #57c5b6;
+  --green-muted: #9fd8bf;
+  --text: #213f3a;           /* ciemna, spokojna zieleñ tekst */
+  --muted: #6b7a74;
+  --danger: #d9534f;
+
+  /* Typografia i spacing */
+  --font-sans: "Roboto";
+  --base-font-size: 16px;
+  --radius: 0.6rem;
+  --card-shadow: 0 6px 18px rgba(33,63,58,0.06);
+}
+
+/* Global */
+* { box-sizing: border-box; }
+html, body {
+    height: 100%;
+    min-height: 100vh;
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: var(--base-font-size);
+    color: var(--text);
+    background-color: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+body > .container {
+    flex: 1 0 auto;
+}
+
+/* Kontener */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.25rem;
+}
+
+main[role="main"] {
+    flex: 1 0 auto; /* rozci¹ga zawartoœæ, popycha footer w dó³ */
+}
+
+/* Nag³ówki */
+h1, h2, h3, h4 {
+  margin-top: 0;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+/* Karta gry */
+.card.game-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid rgba(33,63,58,0.04);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+/* Layout karty */
+.card .card-body {
+  padding: 1rem;
+}
+
+/* Miniaturka ok³adki */
+.img-thumbnail.game-thumb {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: none;
+  background: var(--beige-100);
+  display: block;
+}
+
+/* Przyciski */
+.btn-primary {
+  background-color: var(--mint);
+  border-color: var(--mint);
+  color: #0b2b26;
+  font-weight: 600;
+  padding: 0.45rem 0.8rem;
+  border-radius: 0.5rem;
+  box-shadow: none;
+}
+.btn-outline-secondary {
+  background: transparent;
+  border: 1px solid var(--beige-300);
+  color: var(--text);
+  border-radius: 0.5rem;
+}
+
+/* Detale tekstowe */
+.text-muted-sm { color: var(--muted); font-size: 0.9rem; }
+.badge-status {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+}
+.badge-available { background: var(--mint-600); color: #04231f; }
+.badge-locked { background: var(--green-muted); color: #063027; }
+
+/* Formularze */
+.form-control {
+  border-radius: 0.5rem;
+  border: 1px solid rgba(33,63,58,0.08);
+  padding: 0.55rem 0.75rem;
+  background: #fff;
+}
+
+/* Header / nav */
+header nav {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  background: transparent;
+}
+header nav a { color: var(--text); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 0.45rem; }
+header nav a:hover { background: var(--beige-100); }
+
+/* Footer */
+footer {
+    flex-shrink: 0; /* Stopka nie mo¿e siê kurczyæ */
+    padding: 1.5rem 0;
+    color: var(--text-muted);
+    background: transparent;
+    border-top: 1px solid var(--border-light) !important;
+}
+
+/* Responsywnoœæ */
+@media (max-width: 768px) {
+  .img-thumbnail.game-thumb { width: 120px; height: 120px; }
+  .container { padding: 0.8rem; }
+}
+
+/* Small utilities */
+.u-flex { display:flex; gap:0.75rem; align-items:center; }
+.u-space-between { display:flex; justify-content:space-between; align-items:center; }

@@ -7,39 +7,69 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BoardGameHub</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
+
+    <!-- Theme: pastel minimal -->
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
+
+    <!-- site.css może zawierać lokalne poprawki -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/BoardGameHub.styles.css" asp-append-version="true" />
+
 </head>
 <body>
-    <header>
-        <nav>
-            <a asp-controller="BoardGame" asp-action="UserViewAll">Katalog</a>
+    <header class="mb-4">
+        <nav class="navbar navbar-expand-lg custom-navbar">
+            <div class="container">
+                <a class="navbar-brand fw-bold" asp-controller="BoardGame" asp-action="UserViewAll">
+                    <span style="color: var(--mint);">Board</span><span style="color: var(--pink);">Game</span><span style="color: var(--yellow);">Hub</span>
+                </a>
 
-            @if (User.Identity?.IsAuthenticated == true)
-            {
-                if (User.IsInRole("Admin"))
-                {
-                    <a asp-controller="BoardGame" asp-action="ViewAll">Panel gier (admin)</a>
-                    <a asp-controller="Category" asp-action="Index">Kategorie</a>
-                    <a asp-controller="Publisher" asp-action="Index">Wydawcy</a>
-                }
-                else
-                {
-                    <a asp-controller="BoardGame" asp-action="UserViewAll">Moje gry</a>
-                }
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-                <form method="post" asp-area="Identity" asp-page="/Account/Logout" class="d-inline">
-                    <button type="submit" class="btn btn-link">Wyloguj</button>
-                </form>
-            }
-            else
-            {
-                <a asp-area="Identity" asp-page="/Account/Login">Zaloguj</a>
-                <a asp-area="Identity" asp-page="/Account/Register">Zarejestruj</a>
-            }
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="BoardGame" asp-action="UserViewAll">Katalog</a>
+                        </li>
+
+                        @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="BoardGame" asp-action="ViewAll">Panel gier</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Category" asp-action="ViewAll">Kategorie</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Publisher" asp-action="ViewAll">Wydawcy</a>
+                            </li>
+                        }
+                    </ul>
+
+                    <div class="d-flex align-items-center mt-3 mt-lg-0">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <form method="post" asp-area="Identity" asp-page="/Account/Logout" class="m-0">
+                                <button type="submit" class="btn btn-secondary btn-sm px-4">Wyloguj</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="btn btn-secondary btn-sm px-4" asp-area="Identity" asp-page="/Account/Login">Zaloguj</a>
+                        }
+                    </div>
+                </div>
+            </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -51,6 +81,7 @@
             &copy; 2026 - BoardGameHub - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

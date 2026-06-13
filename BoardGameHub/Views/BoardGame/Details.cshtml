@@ -1,35 +1,68 @@
 ﻿@model BoardGameHub.Models.DbModels.BoardGame
 
 @{
-    ViewData["Title"] = "Szczegóły gry";
+    ViewData["Title"] = Model.Title;
 }
 
-<h1>@Model.Title</h1>
-<hr />
+<div class="mb-4 mt-2">
+    <a asp-action="UserViewAll" class="text-decoration-none text-muted-sm">
+        &larr; Wróć do katalogu
+    </a>
+</div>
 
-<div class="row">
-    <div class="col-md-4">
-        <img src="@(string.IsNullOrEmpty(Model.ImagePath) ? Url.Content("~/images/placeholder.png") : Url.Content(Model.ImagePath))"
-             alt="@Model.Title" class="img-fluid img-thumbnail" />
-    </div>
-    <div class="col-md-8">
-        <dl class="row">
-            <dt class="col-sm-3">Opis</dt>
-            <dd class="col-sm-9">@Model.Description</dd>
+<div class="card game-card border-0 p-0 overflow-hidden mb-5 h-auto" style="box-shadow: var(--shadow-hover);">
+    <div class="row g-0">
+        <div class="col-md-5 p-4 d-flex justify-content-center align-items-start">
+            <img src="@(string.IsNullOrEmpty(Model.ImagePath) ? Url.Content("~/images/placeholder.png") : Url.Content(Model.ImagePath))"
+                 alt="@Model.Title" class="img-fluid shadow-sm"
+                 style="object-fit: cover; border-radius: var(--radius-lg); width: 100%; max-height: 500px;" />
+        </div>
 
-            <dt class="col-sm-3">Kategoria</dt>
-            <dd class="col-sm-9">@Model.Category?.Name ?? "-"</dd>
+        <div class="col-md-7">
+            <div class="card-body p-4 p-lg-5 d-flex flex-column h-100">
 
-            <dt class="col-sm-3">Wydawca</dt>
-            <dd class="col-sm-9">@Model.Publisher?.Name ?? "-"</dd>
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h1 class="fw-bold mb-0 me-3">@Model.Title</h1>
 
-            <dt class="col-sm-3">Liczba graczy</dt>
-            <dd class="col-sm-9">@Model.MinPlayers – @Model.MaxPlayers</dd>
+                    @if (Model.Status == BoardGameHub.Models.DbModels.GameStatus.Dostępna)
+                    {
+                        <span class="badge badge-soft badge-soft-success fs-6 mt-1">@Model.Status</span>
+                    }
+                    else if (Model.Status == BoardGameHub.Models.DbModels.GameStatus.Wypożyczona)
+                    {
+                        <span class="badge badge-soft badge-soft-warning fs-6 mt-1">@Model.Status</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-soft badge-soft-danger fs-6 mt-1">@Model.Status</span>
+                    }
+                </div>
 
-            <dt class="col-sm-3">Status</dt>
-            <dd class="col-sm-9">@Model.Status</dd>
-        </dl>
+                <p class="text-muted mb-4 fs-5">
+                    Wydawca: <span class="fw-medium text-dark">@(Model.Publisher?.Name ?? "Brak danych")</span>
+                </p>
 
-        <a asp-action="UserViewAll" class="btn btn-secondary">Powrót</a>
+                <h5 class="fw-semibold mb-3">O grze</h5>
+                <p class="mb-5" style="line-height: 1.8; color: var(--text-muted);">
+                    @(string.IsNullOrEmpty(Model.Description) ? "Brak opisu dla tej gry." : Model.Description)
+                </p>
+
+                <div class="row g-3 mt-auto">
+                    <div class="col-sm-6">
+                        <div class="p-3 rounded-3" style="background-color: var(--bg); border: 1px solid var(--border-light);">
+                            <span class="d-block text-muted-sm mb-1">Kategoria</span>
+                            <strong class="fs-6">@(Model.Category?.Name ?? "-")</strong>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 rounded-3" style="background-color: var(--bg); border: 1px solid var(--border-light);">
+                            <span class="d-block text-muted-sm mb-1">Liczba graczy</span>
+                            <strong class="fs-6">@Model.MinPlayers – @Model.MaxPlayers os.</strong>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 </div>

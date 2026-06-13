@@ -1,0 +1,186 @@
+﻿:root {
+    /* --- NOWA PALETA: Warm, Fun & Playful --- */
+    --bg: #fdfaf4; /* Ciepły, kremowy beż (Cozy Cream) */
+    --surface: #ffffff; /* Czysta biel kart, idealnie odcinająca się od beżu */
+    --border-light: #f2e6d8; /* Mleczna, ciepła obwódka */
+
+    --text-main: #2d1e10; /* Głęboka, ciepła czekolada (zamiast surowej czerni) */
+    --text-muted: #827160; /* Ciepły, matowy odcień kawy z mlekiem */
+    /* Kolor główny dla przycisków i akcji: energetyczny, soczysty pomarańcz */
+    --primary: #ff6b4a;
+    --primary-hover: #e55636;
+    /* Kolory akcentowe (używane w logo, statusach i dekoracjach) */
+    --mint: #10b981; /* Świeża, soczysta zieleń (Emerald) */
+    --pink: #ff5286; /* Radosny, ciepły róż (Strawberry Pop) */
+    --yellow: #f59e0b; /* Słoneczny, złocisty żółty */
+    --orange: #ff6b4a; /* Pomarańczowy */
+    /* Typografia i kształty - mocniejsze zaokrąglenia dla efektu "modern & fun" */
+    --font-sans: "Roboto Slab", serif;
+    --radius-md: 12px;
+    --radius-lg: 20px; /* "Bąbelkowe", nowoczesne zaokrąglenia */
+    /* Przestrzenne, ciepłe cienie z poświatą koloru podstawowego */
+    --shadow-sm: 0 4px 12px rgba(45, 30, 16, 0.03);
+    --shadow-hover: 0 20px 32px -8px rgba(255, 107, 74, 0.15), 0 8px 20px -6px rgba(45, 30, 16, 0.05);
+}
+
+/* --- Global & Typography --- */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: var(--font-sans);
+    color: var(--text-main);
+    background-color: var(--bg);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-main);
+}
+
+hr {
+    color: var(--border-light);
+    opacity: 1;
+}
+
+/* --- Rozwiązanie problemu "Sticky Footer" --- */
+body > .container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+main[role="main"] {
+    flex: 1;
+}
+
+footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border-light) !important;
+    padding: 1.5rem 0;
+    color: var(--text-muted);
+    margin-top: auto;
+}
+
+/* --- Nowoczesna, interaktywna Karta Gry --- */
+.game-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+    overflow: hidden;
+    height: 100%;
+}
+
+    /* Dynamiczny, sprężysty efekt uniesienia karty po najechaniu */
+    .game-card:hover {
+        transform: translateY(-6px) scale(1.01);
+        box-shadow: var(--shadow-hover);
+    }
+
+/* Szerszy, piękny obrazek okładki gier */
+.game-thumb {
+    width: 180px;
+    min-height: 160px;
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+    background: #fdfaf4;
+}
+
+/* --- Przyciski (Soczysty Pomarańcz) --- */
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
+    font-weight: 700;
+    padding: 0.55rem 1.25rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(255, 107, 74, 0.2);
+    transition: all 0.2s ease;
+}
+
+    .btn-primary:hover, .btn-primary:focus {
+        background-color: var(--primary-hover);
+        border-color: var(--primary-hover);
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(255, 107, 74, 0.3);
+    }
+
+.btn-secondary {
+    background-color: var(--bg);
+    border-color: var(--border-light);
+    color: var(--text-main);
+    font-weight: 600;
+    border-radius: 10px;
+}
+
+    .btn-secondary:hover {
+        background-color: var(--border-light);
+        color: var(--text-main);
+    }
+
+/* --- Stylowy Fokus na formularzach (zgodny z nową paletą) --- */
+.form-control:focus, .btn:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(255, 107, 74, 0.15) !important;
+}
+
+/* --- Nowe Etykiety Statusów (Soft Badges) --- */
+.badge-soft {
+    padding: 0.5em 0.9em;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+}
+/* Dostępna - żywa zieleń */
+.badge-soft-success {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+/* Wypożyczona - słoneczny żółty */
+.badge-soft-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+/* Niedostępna / Inne - energetyczny róż/czerwień */
+.badge-soft-danger {
+    background-color: #ffe4e6;
+    color: #9f1239;
+}
+
+/* Detale tekstowe */
+.text-muted-sm {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* --- Customizacja paska nawigacji --- */
+.custom-navbar {
+    background-color: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(10px); /* Modny efekt rozmycia tła za menu */
+    border-bottom: 1px solid var(--border-light);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+    .custom-navbar .nav-link {
+        color: var(--text-muted);
+        font-weight: 600;
+        transition: color 0.2s;
+    }
+
+        .custom-navbar .nav-link:hover {
+            color: var(--primary);
+        }

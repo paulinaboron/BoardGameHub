@@ -39,7 +39,15 @@
                 <td>
                     <strong>@Html.DisplayFor(modelItem => item.Title)</strong>
                     <br />
-                    <small class="text-muted">@item.Description</small>
+                    <small class="text-muted">
+                        @{
+                            var description = item.Description ?? string.Empty;
+                            var truncatedDescription = description.Length > 50
+                            ? description.Substring(0, 50) + "..."
+                            : description;
+                        }
+                        @truncatedDescription
+                    </small>
                 </td>
                 <td>
                     @item.MinPlayers - @item.MaxPlayers os.

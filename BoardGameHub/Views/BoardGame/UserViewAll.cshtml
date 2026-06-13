@@ -1,39 +1,101 @@
 ﻿@model IEnumerable<BoardGameHub.Models.DbModels.BoardGame>
 
 @{
-    ViewData["Title"] = "Katalog gier (tylko do podglądu)";
+    ViewData["Title"] = "Katalog gier";
 }
 
-<h1>Katalog gier</h1>
-<hr />
+<div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+    <h1 class="m-0">Katalog gier</h1>
+</div>
 
-<div class="row">
-    @foreach (var item in Model)
+<!-- Sekcja filtrów -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Filtry</h5>
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="categoryId" class="form-label">Kategoria</label>
+                <select class="form-select" id="categoryId" name="categoryId">
+                    <option value="">-- Wszystkie kategorie --</option>
+                    @foreach (var category in (SelectList)ViewBag.Categories)
+                    {
+                        <option value="@category.Value" selected="@(category.Value == ViewBag.SelectedCategoryId?.ToString())">
+                            @category.Text
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label for="status" class="form-label">Dostępność</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">-- Wszystkie statusy --</option>
+                    <option value="Dostępna" selected="@(ViewBag.SelectedStatus == "Dostępna")">Dostępna</option>
+                    <option value="Wypożyczona" selected="@(ViewBag.SelectedStatus == "Wypożyczona")">Wypożyczona</option>
+                    <option value="W_konserwacji" selected="@(ViewBag.SelectedStatus == "W_konserwacji")">W_konserwacji</option>
+                </select>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-primary">Filtruj</button>
+                <a href="@Url.Action("UserViewAll")" class="btn btn-secondary">Wyczyść filtry</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Katalog gier -->
+<div class="row g-4">
+    @if (Model.Count() == 0)
     {
-        <div class="col-md-6 mb-3">
-            <div class="card">
-                <div class="row g-0">
-                    <div class="col-auto p-2">
+        <div class="col-12">
+            <p class="text-muted">Brak gier spełniających kryteria filtrowania.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6">
+                <div class="card game-card">
+                    <div class="d-flex h-100">
                         <img src="@(string.IsNullOrEmpty(item.ImagePath) ? Url.Content("~/images/placeholder.png") : Url.Content(item.ImagePath))"
-                             alt="@item.Title" class="img-thumbnail" style="width:150px; height:auto;" />
-                    </div>
-                    <div class="col">
-                        <div class="card-body">
-                            <h5 class="card-title">@item.Title</h5>
-                            <p class="card-text">@item.Description</p>
-                            <p class="card-text">
-                                <small class="text-muted">
-                                    Kategoria: @item.Category?.Name ?? "-" |
-                                    Wydawca: @item.Publisher?.Name ?? "-" |
-                                    Gracze: @item.MinPlayers–@item.MaxPlayers |
-                                    Status: @item.Status
-                                </small>
+                             alt="@item.Title" class="game-thumb" />
+
+                        <div class="p-3 p-xl-4 d-flex flex-column w-100">
+                            <h5 class="mb-2 fw-bold">
+                                @item.Title
+                            </h5>
+
+                            <p class="text-muted-sm mb-1">
+                                <i class="bi bi-tag"></i> @(item.Category?.Name ?? "Brak kategorii")
                             </p>
-                            <a asp-action="Details" asp-route-id="@item.BoardGameId" class="btn btn-primary">Szczegóły</a>
+                            <p class="text-muted-sm mb-3">
+                                <i class="bi bi-people"></i> @item.MinPlayers - @item.MaxPlayers os.
+                            </p>
+
+                            <div class="d-flex justify-content-between align-items-center mt-auto pt-2">
+                                @if (item.Status == BoardGameHub.Models.DbModels.GameStatus.Dostępna)
+                                {
+                                    <span class="badge badge-soft badge-soft-success">@item.Status</span>
+                                }
+                                else if (item.Status == BoardGameHub.Models.DbModels.GameStatus.Wypożyczona)
+                                {
+                                    <span class="badge badge-soft badge-soft-warning">@item.Status</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-soft badge-soft-danger">@item.Status</span>
+                                }
+
+                                <a asp-action="Details" asp-route-id="@item.BoardGameId" class="btn btn-primary btn-sm">
+                                    Szczegóły
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        }
     }
 </div>
