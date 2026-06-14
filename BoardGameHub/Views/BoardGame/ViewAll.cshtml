@@ -50,7 +50,9 @@
                     </small>
                 </td>
                 <td>
-                    @item.MinPlayers - @item.MaxPlayers os.
+                @(item.MinPlayers == item.MaxPlayers
+                                ? $"{item.MinPlayers} os."
+                                : $"{item.MinPlayers} – {item.MaxPlayers} os.")
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Category.Name)
@@ -59,7 +61,6 @@
                     @Html.DisplayFor(modelItem => item.Publisher.Name)
                 </td>
                 <td>
-                    @* Kolorowanie statusu w zależności od dostępności gier *@
                     @if (item.Status == BoardGameHub.Models.DbModels.GameStatus.Dostępna)
                     {
                         <span class="badge bg-success">@item.Status</span>

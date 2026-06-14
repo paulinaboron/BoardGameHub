@@ -8,12 +8,11 @@
     <h1 class="m-0">Katalog gier</h1>
 </div>
 
-<!-- Sekcja filtrów -->
 <div class="card mb-4">
     <div class="card-body">
         <h5 class="card-title">Filtry</h5>
         <form method="get" class="row g-3">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label for="categoryId" class="form-label">Kategoria</label>
                 <select class="form-select" id="categoryId" name="categoryId">
                     <option value="">-- Wszystkie kategorie --</option>
@@ -26,7 +25,7 @@
                 </select>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label for="status" class="form-label">Dostępność</label>
                 <select class="form-select" id="status" name="status">
                     <option value="">-- Wszystkie statusy --</option>
@@ -36,7 +35,24 @@
                 </select>
             </div>
 
-            <div class="col-md-4 d-flex align-items-end gap-2">
+            <div class="col-md-3">
+                <label for="playerCount" class="form-label">Liczba graczy</label>
+                <select class="form-select" id="playerCount" name="playerCount">
+                    <option value="">-- Dowolna liczba --</option>
+                    <option value="1" selected="@(ViewBag.SelectedPlayerCount?.ToString() == "1")">1 gracz</option>
+                    <option value="2" selected="@(ViewBag.SelectedPlayerCount?.ToString() == "2")">2 graczy</option>
+                    <option value="3" selected="@(ViewBag.SelectedPlayerCount?.ToString() == "3")">3 graczy</option>
+                    <option value="4" selected="@(ViewBag.SelectedPlayerCount?.ToString() == "4")">4 graczy</option>
+                    <option value="5" selected="@(ViewBag.SelectedPlayerCount?.ToString() == "5")">5 graczy</option>
+                    <option value="6" selected="@(ViewBag.SelectedPlayerCount?.ToString() == "6")">6 graczy</option>
+                    <option value="7" selected="@(ViewBag.SelectedPlayerCount?.ToString() == "7")">7 graczy</option>
+                    <option value="8" selected="@(ViewBag.SelectedPlayerCount?.ToString() == "8")">8 graczy</option>
+                    <option value="10" selected="@(ViewBag.SelectedPlayerCount?.ToString() == "10")">10 graczy</option>
+                    <option value="12" selected="@(ViewBag.SelectedPlayerCount?.ToString() == "12")">12 graczy</option>
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end gap-2">
                 <button type="submit" class="btn btn-primary">Filtruj</button>
                 <a href="@Url.Action("UserViewAll")" class="btn btn-secondary">Wyczyść filtry</a>
             </div>
@@ -44,7 +60,6 @@
     </div>
 </div>
 
-<!-- Katalog gier -->
 <div class="row g-4">
     @if (Model.Count() == 0)
     {
@@ -71,7 +86,10 @@
                                 <i class="bi bi-tag"></i> @(item.Category?.Name ?? "Brak kategorii")
                             </p>
                             <p class="text-muted-sm mb-3">
-                                <i class="bi bi-people"></i> @item.MinPlayers - @item.MaxPlayers os.
+                                <i class="bi bi-people"></i> @(item.MinPlayers == item.MaxPlayers
+                                                        ? $"{item.MinPlayers} os."
+                                                        : $"{item.MinPlayers} – {item.MaxPlayers} os.")
+
                             </p>
 
                             <div class="d-flex justify-content-between align-items-center mt-auto pt-2">

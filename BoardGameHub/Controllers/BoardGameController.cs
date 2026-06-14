@@ -14,7 +14,7 @@ namespace BoardGameHub.Controllers
     public class BoardGameController : Controller
     {
         private readonly DataBaseContext _context;
-        private readonly IWebHostEnvironment _webHostEnvironment; // Potrzebne do zapisu zdjęć w wwwroot 
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public BoardGameController(DataBaseContext context, IWebHostEnvironment webHostEnvironment)
         {
@@ -22,7 +22,7 @@ namespace BoardGameHub.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        // 1. Wyświetlanie katalogu gier (Z użyciem .Include, aby pobrać też nazwy Kategorii i Wydawców)
+        // 1. Wyświetlanie katalogu gier
         [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult ViewAll()
@@ -36,7 +36,7 @@ namespace BoardGameHub.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public IActionResult UserViewAll(int? categoryId, string? status)
+        public IActionResult UserViewAll(int? categoryId, string? status, int? playerCount)
         {
             var boardGames = _context.BoardGames
                 .Include(b => b.Category)
@@ -59,16 +59,22 @@ namespace BoardGameHub.Controllers
                 }
             }
 
-            // Pobierz listę kategorii do widoku
+            // Filtrowanie po liczbie graczy
+            if (playerCount.HasValue && playerCount.Value > 0)
+            {
+                boardGames = boardGames.Where(b => b.MinPlayers <= playerCount.Value && playerCount.Value <= b.MaxPlayers).ToList();
+            }
+
             ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name", categoryId);
             ViewBag.Statuses = new SelectList(Enum.GetValues(typeof(GameStatus)).Cast<GameStatus>(), status);
             ViewBag.SelectedCategoryId = categoryId;
             ViewBag.SelectedStatus = status;
+            ViewBag.SelectedPlayerCount = playerCount;
 
             return View(boardGames);
         }
 
-        // Szczegóły gry — dostęp dla użytkowników
+        // Szczegóły gry dla użytkowników
         [AllowAnonymous]
         [HttpGet]
         public IActionResult Details(int id)
@@ -82,7 +88,7 @@ namespace BoardGameHub.Controllers
             return View(boardGame);
         }
 
-        // 2. Dodawanie gry (GET) - przygotowujemy listy rozwijane dla Kategorii i Wydawców
+        // 2. Dodawanie gry (GET)
         [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Create()
@@ -91,14 +97,22 @@ namespace BoardGameHub.Controllers
             return View(new BoardGame());
         }
 
-        // 2. Dodawanie gry (POST) - odbiera dane gry oraz przesłany plik graficzny (IFormFile) 
+        // 2. Dodawanie gry (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(BoardGame boardGame, IFormFile? imageFile)
         {
-            // Usuń walidację właściwości nawigacyjnych (jeśli nie zmieniłeś modelu na nullable)
             ModelState.Remove(nameof(boardGame.Category));
             ModelState.Remove(nameof(boardGame.Publisher));
+
+            if (boardGame.MinPlayers < 1)
+            {
+                ModelState.AddModelError(nameof(boardGame.MinPlayers), "Minimalna liczba graczy musi być większa niż 0");
+            }
+            if (boardGame.MaxPlayers < boardGame.MinPlayers)
+            {
+                ModelState.AddModelError(nameof(boardGame.MaxPlayers), "Maksymalna liczba graczy musi być większa lub równa minimalnej");
+            }
 
             if (!ModelState.IsValid)
             {
@@ -120,8 +134,7 @@ namespace BoardGameHub.Controllers
             }
             catch (Exception ex)
             {
-                // Zaloguj wyjątek jeśli masz logger; dla użytkownika pokaż powiadomienie
-                ModelState.AddModelError(string.Empty, "Wystąpił błąd podczas zapisu. Sprawdź logi.");
+                ModelState.AddModelError(string.Empty, "Wystąpił błąd podczas zapisu.");
                 PopulateDropdowns();
                 return View(boardGame);
             }
@@ -144,9 +157,17 @@ namespace BoardGameHub.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(BoardGame boardGame, IFormFile? imageFile, string? currentImagePath)
         {
-            // Usuń walidację właściwości nawigacyjnych, które nie są przesyłane przez formularz
             ModelState.Remove(nameof(boardGame.Category));
             ModelState.Remove(nameof(boardGame.Publisher));
+
+            if (boardGame.MinPlayers < 1)
+            {
+                ModelState.AddModelError(nameof(boardGame.MinPlayers), "Minimalna liczba graczy musi być większa niż 0");
+            }
+            if (boardGame.MaxPlayers < boardGame.MinPlayers)
+            {
+                ModelState.AddModelError(nameof(boardGame.MaxPlayers), "Maksymalna liczba graczy musi być większa lub równa minimalnej");
+            }
 
             if (!ModelState.IsValid)
             {
@@ -156,17 +177,14 @@ namespace BoardGameHub.Controllers
 
             try
             {
-                // Pobierz istniejący rekord z DB, żeby mieć oryginalną ImagePath jeśli trzeba
                 var existing = _context.BoardGames
                     .AsNoTracking()
                     .FirstOrDefault(b => b.BoardGameId == boardGame.BoardGameId);
 
                 if (imageFile != null && imageFile.Length > 0)
                 {
-                    // zapisujemy nowe zdjęcie i (opcjonalnie) usuwamy poprzednie z dysku
                     var newPath = SaveImage(imageFile);
 
-                    // spróbuj usunąć stary plik (bez awarii jeśli nie istnieje)
                     if (!string.IsNullOrEmpty(existing?.ImagePath))
                     {
                         try
@@ -180,7 +198,6 @@ namespace BoardGameHub.Controllers
                         }
                         catch
                         {
-                            // ignoruj błąd usuwania pliku
                         }
                     }
 
@@ -188,7 +205,6 @@ namespace BoardGameHub.Controllers
                 }
                 else
                 {
-                    // jeśli currentImagePath przekazany, użyj go; w przeciwnym razie użyj istniejącego z DB
                     boardGame.ImagePath = !string.IsNullOrEmpty(currentImagePath)
                         ? currentImagePath
                         : existing?.ImagePath;
@@ -237,16 +253,13 @@ namespace BoardGameHub.Controllers
             return RedirectToAction(nameof(ViewAll));
         }
 
-        // --- POMOCNICZE METODY ---
 
-        // Metoda ładująca dane do SelectList, które stworzą dropdowny (menu rozwijane) w widoku HTML
         private void PopulateDropdowns(object? selectedCategory = null, object? selectedPublisher = null)
         {
             ViewBag.CategoryId = new SelectList(_context.Categories, "CategoryId", "Name", selectedCategory);
             ViewBag.PublisherId = new SelectList(_context.Publishers, "PublisherId", "Name", selectedPublisher);
         }
 
-        // Ulepszona metoda zapisu pliku
         private string SaveImage(IFormFile imageFile)
         {
             var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath ?? "wwwroot", "images");
@@ -255,7 +268,6 @@ namespace BoardGameHub.Controllers
                 Directory.CreateDirectory(uploadsFolder);
             }
 
-            // Użyj nazwy pliku bez ścieżek i usuń ewentualne niebezpieczne znaki
             var originalFileName = Path.GetFileName(imageFile.FileName);
             var safeFileName = $"{Guid.NewGuid():N}_{originalFileName}";
             var filePath = Path.Combine(uploadsFolder, safeFileName);
@@ -265,7 +277,6 @@ namespace BoardGameHub.Controllers
                 imageFile.CopyTo(fileStream);
             }
 
-            // Zwracaj ścieżkę względną do wwwroot (możesz też zapisywać "~/" i potem użyć Url.Content)
             return "/images/" + safeFileName;
         }
     }

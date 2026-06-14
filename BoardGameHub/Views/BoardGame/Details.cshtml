@@ -57,7 +57,11 @@
                     <div class="col-sm-6">
                         <div class="p-3 rounded-3" style="background-color: var(--bg); border: 1px solid var(--border-light);">
                             <span class="d-block text-muted-sm mb-1">Liczba graczy</span>
-                            <strong class="fs-6">@Model.MinPlayers – @Model.MaxPlayers os.</strong>
+                            <strong class="fs-6">
+                                @(Model.MinPlayers == Model.MaxPlayers
+                                                                ? $"{Model.MinPlayers} os."
+                                                                : $"{Model.MinPlayers} – {Model.MaxPlayers} os.")
+                            </strong>
                         </div>
                     </div>
                 </div>

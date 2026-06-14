@@ -8,7 +8,7 @@
 <hr />
 <div class="row">
     <div class="col-md-6">
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <form asp-action="Create" method="post" enctype="multipart/form-data" id="gameForm">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -27,12 +27,12 @@
             <div class="row mb-3">
                 <div class="col">
                     <label asp-for="MinPlayers" class="control-label">Min. liczba graczy</label>
-                    <input asp-for="MinPlayers" type="number" class="form-control" min="1" />
+                    <input asp-for="MinPlayers" type="number" class="form-control" min="1" id="minPlayers" />
                     <span asp-validation-for="MinPlayers" class="text-danger"></span>
                 </div>
                 <div class="col">
                     <label asp-for="MaxPlayers" class="control-label">Max. liczba graczy</label>
-                    <input asp-for="MaxPlayers" type="number" class="form-control" min="1" />
+                    <input asp-for="MaxPlayers" type="number" class="form-control" min="1" id="maxPlayers" />
                     <span asp-validation-for="MaxPlayers" class="text-danger"></span>
                 </div>
             </div>
@@ -76,4 +76,24 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        document.getElementById('gameForm').addEventListener('submit', function (e) {
+            const minPlayers = parseInt(document.getElementById('minPlayers').value);
+            const maxPlayers = parseInt(document.getElementById('maxPlayers').value);
+
+            if (minPlayers < 1) {
+                e.preventDefault();
+                alert('Minimalna liczba graczy musi być większa niż 0');
+                return false;
+            }
+
+            if (maxPlayers < minPlayers) {
+                e.preventDefault();
+                alert('Maksymalna liczba graczy musi być większa lub równa minimalnej');
+                return false;
+            }
+
+            return true;
+        });
+    </script>
 }

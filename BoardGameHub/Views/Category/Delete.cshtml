@@ -1,10 +1,10 @@
 @model BoardGameHub.Models.DbModels.Category
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Usuñ kategoriê";
 }
 
-<h1>Usuñ</h1>
+<h1>Usuñ kategoriê</h1>
 
 <h3>Czy napewno chcesz usun¹æ tê kategoriê?</h3>
 <div>
@@ -19,7 +19,7 @@
     </dl>
     <form asp-action="Delete">
         <input type="hidden" asp-for="CategoryId" />
-        <input type="submit" value="Delete" class="btn btn-danger" />
+        <input type="submit" value="Usuñ" class="btn btn-danger" />
         <a asp-action="ViewAll" class="text-decoration-none text-muted-sm">
             &larr; Wróæ do katalogu
         </a>

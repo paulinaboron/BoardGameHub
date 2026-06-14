@@ -11,30 +11,29 @@ namespace BoardGameHub.Controllers
     {
         private readonly DataBaseContext _context;
 
-        // Wstrzykiwanie zależności do kontekstu bazy danych
         public CategoryController(DataBaseContext context)
         {
             _context = context;
         }
 
-        // 1. READ - Wyświetlanie listy wszystkich kategorii
+        // 1. Wyświetlanie listy wszystkich kategorii
         [HttpGet]
         public IActionResult ViewAll()
         {
-            var categories = _context.Categories.ToList(); // Pobranie wszystkich kategorii z bazy
+            var categories = _context.Categories.ToList();
             return View(categories);
         }
 
-        // 2. CREATE - Dodawanie nowej kategorii (GET: Zwraca pusty formularz)
+        // 2. Dodawanie nowej kategorii (GET)
         [HttpGet]
         public IActionResult Create()
         {
-            return View(new Category()); // W .NET 8 używamy typu IActionResult zamiast ActionResult
+            return View(new Category());
         }
 
-        // 2. CREATE - Dodawanie nowej kategorii (POST: Odbiera dane i zapisuje w bazie)
+        // 2.  Dodawanie nowej kategorii (POST)
         [HttpPost]
-        [ValidateAntiForgeryToken] // Zabezpieczenie przed atakami CSRF
+        [ValidateAntiForgeryToken] 
         public IActionResult Create(Category category)
         {
             if (ModelState.IsValid)
@@ -46,7 +45,7 @@ namespace BoardGameHub.Controllers
             return View(category);
         }
 
-        // 3. UPDATE - Edycja istniejącej kategorii (GET: Pobiera dane do formularza)
+        // 3. Edycja istniejącej kategorii (GET)
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -56,20 +55,20 @@ namespace BoardGameHub.Controllers
             return View(category);
         }
 
-        // 3. UPDATE - Edycja istniejącej kategorii (POST: Zapisuje wprowadzone zmiany)
+        // 3. Edycja istniejącej kategorii (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Category category)
         {
             if (!ModelState.IsValid) return View(category);
 
-            _context.Categories.Update(category); // EF Core automatycznie śledzi i aktualizuje zmiany
+            _context.Categories.Update(category);
             _context.SaveChanges();
 
             return RedirectToAction(nameof(ViewAll));
         }
 
-        // 4. DELETE - Usuwanie kategorii (GET: Ekran pytający o potwierdzenie)
+        // 4. Usuwanie kategorii (GET)
         [HttpGet]
         public IActionResult Delete(int? id)
         {
@@ -78,10 +77,17 @@ namespace BoardGameHub.Controllers
             var category = _context.Categories.FirstOrDefault(x => x.CategoryId == id);
             if (category == null) return NotFound();
 
+            var gamesWithCategory = _context.BoardGames.Where(b => b.CategoryId == id).Count();
+            if (gamesWithCategory > 0)
+            {
+                TempData["Error"] = $"Nie można usunąć tej kategorii. Jest używana w {gamesWithCategory} grze(ach).";
+                return RedirectToAction(nameof(ViewAll));
+            }
+
             return View(category);
         }
 
-        // 4. DELETE - Usuwanie kategorii (POST: Faktyczne skasowanie rekordu po potwierdzeniu)
+        // 4. Usuwanie kategorii (POST)
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirm(int id)
@@ -89,8 +95,16 @@ namespace BoardGameHub.Controllers
             var category = _context.Categories.FirstOrDefault(x => x.CategoryId == id);
             if (category != null)
             {
+                var gamesWithCategory = _context.BoardGames.Where(b => b.CategoryId == id).Count();
+                if (gamesWithCategory > 0)
+                {
+                    TempData["Error"] = $"Nie można usunąć tej kategorii. Jest używana w {gamesWithCategory} grze(ach).";
+                    return RedirectToAction(nameof(ViewAll));
+                }
+
                 _context.Categories.Remove(category);
                 _context.SaveChanges();
+                TempData["Success"] = "Kategoria została pomyślnie usunięta.";
             }
             return RedirectToAction(nameof(ViewAll));
         }

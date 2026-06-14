@@ -67,7 +67,7 @@ namespace BoardGameHub.Controllers
             return RedirectToAction(nameof(ViewAll));
         }
 
-        // Usuwanie wydawcy (GET)
+        // 4. Usuwanie wydawcy (GET)
         [HttpGet]
         public IActionResult Delete(int? id)
         {
@@ -76,10 +76,17 @@ namespace BoardGameHub.Controllers
             var publisher = _context.Publishers.FirstOrDefault(x => x.PublisherId == id);
             if (publisher == null) return NotFound();
 
+            var gamesWithPublisher = _context.BoardGames.Where(b => b.PublisherId == id).Count();
+            if (gamesWithPublisher > 0)
+            {
+                TempData["Error"] = $"Nie można usunąć tego wydawcy. Jest używany w {gamesWithPublisher} grze(ach).";
+                return RedirectToAction(nameof(ViewAll));
+            }
+
             return View(publisher);
         }
 
-        // Usuwanie wydawcy (POST)
+        // 4. Usuwanie wydawcy (POST)
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirm(int id)
@@ -87,8 +94,16 @@ namespace BoardGameHub.Controllers
             var publisher = _context.Publishers.FirstOrDefault(x => x.PublisherId == id);
             if (publisher != null)
             {
+                var gamesWithPublisher = _context.BoardGames.Where(b => b.PublisherId == id).Count();
+                if (gamesWithPublisher > 0)
+                {
+                    TempData["Error"] = $"Nie można usunąć tego wydawcy. Jest używany w {gamesWithPublisher} grze(ach).";
+                    return RedirectToAction(nameof(ViewAll));
+                }
+
                 _context.Publishers.Remove(publisher);
                 _context.SaveChanges();
+                TempData["Success"] = "Wydawca został pomyślnie usunięty.";
             }
             return RedirectToAction(nameof(ViewAll));
         }
