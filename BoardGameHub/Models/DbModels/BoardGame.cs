@@ -4,7 +4,8 @@
     {
         Dostępna,
         Wypożyczona,
-        W_konserwacji
+        W_konserwacji,
+        Zarezerwowana
     }
     public class BoardGame
     {
@@ -31,6 +32,8 @@
             Title = title;
             Status = status;
         }
+
+        public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
     }
 }
 

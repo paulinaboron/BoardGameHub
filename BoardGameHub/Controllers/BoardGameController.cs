@@ -74,7 +74,7 @@ namespace BoardGameHub.Controllers
             return View(boardGames);
         }
 
-        // Szczegóły gry dla użytkowników
+        // Szczegóły gry — dostęp dla użytkowników
         [AllowAnonymous]
         [HttpGet]
         public IActionResult Details(int id)
@@ -86,6 +86,45 @@ namespace BoardGameHub.Controllers
 
             if (boardGame == null) return NotFound();
             return View(boardGame);
+        }
+
+        // Rezerwacja gry (POST)
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ReserveGame(int id, string customerName, string customerPhone)
+        {
+            if (string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(customerPhone))
+            {
+                TempData["Error"] = "Imię i numer telefonu są wymagane.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            try
+            {
+                var boardGame = _context.BoardGames.FirstOrDefault(b => b.BoardGameId == id);
+                if (boardGame == null) return NotFound();
+
+                var reservation = new Reservation
+                {
+                    BoardGameId = id,
+                    CustomerName = customerName.Trim(),
+                    CustomerPhone = customerPhone.Trim(),
+                    ReservationDate = DateTime.Now
+                };
+
+                boardGame.Status = GameStatus.Zarezerwowana;
+                _context.Reservations.Add(reservation);
+                _context.SaveChanges();
+
+                TempData["Success"] = $"Gra zarezerwowana! Skontaktujemy się z Tobą pod numerem {customerPhone}";
+                return RedirectToAction(nameof(UserViewAll));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Błąd przy rezerwacji. Spróbuj jeszcze raz.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
         }
 
         // 2. Dodawanie gry (GET)
@@ -253,6 +292,60 @@ namespace BoardGameHub.Controllers
             return RedirectToAction(nameof(ViewAll));
         }
 
+        // Panel wypożyczeń dla admina
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public IActionResult Rentals()
+        {
+            var reservations = _context.Reservations
+                .Include(r => r.BoardGame)
+                .OrderByDescending(r => r.ReservationDate)
+                .ToList();
+
+            return View(reservations);
+        }
+
+        // Usuń wypożyczenie (admin)
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteRental(int id)
+        {
+            var reservation = _context.Reservations.FirstOrDefault(r => r.ReservationId == id);
+            if (reservation != null)
+            {
+                var boardGame = _context.BoardGames.FirstOrDefault(b => b.BoardGameId == reservation.BoardGameId);
+                if (boardGame != null)
+                {
+                    boardGame.Status = GameStatus.Dostępna;
+                }
+
+                _context.Reservations.Remove(reservation);
+                _context.SaveChanges();
+                TempData["Success"] = "Wypożyczenie zostało usunięte, gra wróciła do dostępnych.";
+            }
+            return RedirectToAction(nameof(Rentals));
+        }
+
+        // Wypożycz grę
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RentGame(int id)
+        {
+            var reservation = _context.Reservations.FirstOrDefault(r => r.ReservationId == id);
+            if (reservation != null)
+            {
+                var boardGame = _context.BoardGames.FirstOrDefault(b => b.BoardGameId == reservation.BoardGameId);
+                if (boardGame != null)
+                {
+                    boardGame.Status = GameStatus.Wypożyczona;
+                    _context.SaveChanges();
+                    TempData["Success"] = "Gra została oznaczona jako wypożyczona.";
+                }
+            }
+            return RedirectToAction(nameof(Rentals));
+        }
 
         private void PopulateDropdowns(object? selectedCategory = null, object? selectedPublisher = null)
         {

@@ -164,19 +164,9 @@ body.dark-theme .game-thumb {
     color: #065f46;
 }
 
-body.dark-theme .badge-soft-success {
-    background-color: #064e3b;
-    color: #a7f3d0;
-}
-
 .badge-soft-warning {
     background-color: #fef3c7;
     color: #92400e;
-}
-
-body.dark-theme .badge-soft-warning {
-    background-color: #78350f;
-    color: #fcd34d;
 }
 
 .badge-soft-danger {
@@ -184,9 +174,29 @@ body.dark-theme .badge-soft-warning {
     color: #9f1239;
 }
 
+.badge-soft-info {
+    background-color: #cffafe;
+    color: #164e63;
+}
+
+body.dark-theme .badge-soft-success {
+    background-color: #064e3b;
+    color: #a7f3d0;
+}
+
+body.dark-theme .badge-soft-warning {
+    background-color: #78350f;
+    color: #fcd34d;
+}
+
 body.dark-theme .badge-soft-danger {
     background-color: #7f1d1d;
     color: #fecaca;
+}
+
+body.dark-theme .badge-soft-info {
+    background-color: #164e63;
+    color: #06b6d4;
 }
 
 .text-muted-sm {

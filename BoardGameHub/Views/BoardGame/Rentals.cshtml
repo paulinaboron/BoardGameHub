@@ -1,0 +1,101 @@
+@model IEnumerable<BoardGameHub.Models.DbModels.Reservation>
+
+@{
+    ViewData["Title"] = "Panel wypo¿yczeñ";
+}
+
+<div class="mb-4 mt-2">
+    <h1>Panel rezerwacji gier</h1>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info" role="alert">
+        <i class="bi bi-info-circle"></i> Brak rezerwacji.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Gra</th>
+                    <th>Imiê i nazwisko</th>
+                    <th>Numer telefonu</th>
+                    <th>Data rezerwacji</th>
+                    <th>Status gry</th>
+                    <th>Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var rental in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>
+                                <a asp-action="Details" asp-route-id="@rental.BoardGameId" 
+                                   class="text-decoration-none">
+                                    @rental.BoardGame?.Title
+                                </a>
+                            </strong>
+                        </td>
+                        <td>@rental.CustomerName</td>
+                        <td>
+                            <a href="tel:@rental.CustomerPhone" class="text-decoration-none">
+                                @rental.CustomerPhone
+                            </a>
+                        </td>
+                        <td>@rental.ReservationDate.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>
+                            @if (rental.BoardGame?.Status == BoardGameHub.Models.DbModels.GameStatus.Dostêpna)
+                            {
+                                <span class="badge badge-soft badge-soft-success">Dostêpna</span>
+                            }
+                            else if (rental.BoardGame?.Status == BoardGameHub.Models.DbModels.GameStatus.Zarezerwowana)
+                            {
+                                <span class="badge badge-soft badge-soft-info">Zarezerwowana</span>
+                            }
+                            else if (rental.BoardGame?.Status == BoardGameHub.Models.DbModels.GameStatus.Wypo¿yczona)
+                            {
+                                <span class="badge badge-soft badge-soft-warning">Wypo¿yczona</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-soft badge-soft-danger">@rental.BoardGame?.Status</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <form asp-action="RentGame" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@rental.ReservationId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-success" 
+                                            title="Gra wypo¿yczona" 
+                                            onclick="rent confirm('Oznaczyæ grê jako wypo¿yczon¹?')">
+                                        <i class="bi bi-check-circle"></i>
+                                    </button>
+                                </form>
+                                <form asp-action="DeleteRental" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@rental.ReservationId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                            title="Usuñ"
+                                            onclick="return confirm('Usun¹æ tê rezerwacjê?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

@@ -12,5 +12,6 @@ namespace BoardGameHub.Models
         public DbSet<BoardGame> BoardGames { get; set; }
         public DbSet<Publisher> Publishers { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
     }
 }

@@ -58,15 +58,94 @@
                         <div class="p-3 rounded-3" style="background-color: var(--bg); border: 1px solid var(--border-light);">
                             <span class="d-block text-muted-sm mb-1">Liczba graczy</span>
                             <strong class="fs-6">
-                                @(Model.MinPlayers == Model.MaxPlayers
-                                                                ? $"{Model.MinPlayers} os."
-                                                                : $"{Model.MinPlayers} – {Model.MaxPlayers} os.")
+                                @(Model.MinPlayers == Model.MaxPlayers 
+                                    ? $"{Model.MinPlayers} os." 
+                                    : $"{Model.MinPlayers} – {Model.MaxPlayers} os.")
                             </strong>
                         </div>
                     </div>
                 </div>
 
+                @if (Model.Status == BoardGameHub.Models.DbModels.GameStatus.Dostępna)
+                {
+                    <div class="mt-4">
+                        <button type="button" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#reservationModal">
+                            <i class="bi bi-calendar-check"></i> Rezerwuj grę
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <div class="mt-4">
+                        <button class="btn btn-secondary btn-lg w-100" disabled>
+                            Gra niedostępna
+                        </button>
+                    </div>
+                }
+
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal rezerwacji -->
+<div class="modal fade" id="reservationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rezerwuj: @Model.Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="ReserveGame" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <input type="hidden" name="id" value="@Model.BoardGameId" />
+
+                    <div class="mb-3">
+                        <label for="customerName" class="form-label">Imię i nazwisko</label>
+                        <input type="text" id="customerName" name="customerName" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="customerPhone" class="form-label">Numer telefonu</label>
+                        <input type="tel" id="customerPhone" name="customerPhone" class="form-control" 
+                               placeholder="+48..." required />
+                    </div>
+
+                    <div class="alert alert-info" role="alert">
+                        <i class="bi bi-info-circle"></i>
+                        Po rezerwacji skontaktujemy się z Tobą.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="submit" class="btn btn-primary">Rezerwuj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var alert = document.createElement('div');
+            alert.className = 'alert alert-success alert-dismissible fade show';
+            alert.innerHTML = '@Html.Raw(TempData["Success"])' + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+            document.body.insertBefore(alert, document.body.firstChild);
+        });
+    </script>
+}
+
+@if (TempData["Error"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var alert = document.createElement('div');
+            alert.className = 'alert alert-danger alert-dismissible fade show';
+            alert.innerHTML = '@Html.Raw(TempData["Error"])' + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+            document.body.insertBefore(alert, document.body.firstChild);
+        });
+    </script>
+}
